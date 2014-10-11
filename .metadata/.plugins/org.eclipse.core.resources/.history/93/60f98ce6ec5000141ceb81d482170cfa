@@ -1,0 +1,21 @@
+
+public class Scheduler {
+
+	private final int schedType;
+	
+	public Scheduler(int type) {
+		schedType = type;
+	      System.out.println("  Scheduler type: 0 - First Come, First Served (Non-preemptive)");
+	      System.out.println("  Scheduler type: 1 - Shortest Remaining Time First (Preemptive)");
+	      System.out.println("  Scheduler type: 2 - Priority-based Scheduler (Preemptive)");
+	      System.out.println("  Scheduler type: 3 - Multi-Level Feedback Queue w/ Aging (Preemptive)");
+	}
+
+
+	public float scheduleme(float arrivalTime, int id, int timeRemaining,
+			int priority) {
+		System.out.println(arrivalTime + id +timeRemaining +priority);
+		return 0;
+	}
+
+}

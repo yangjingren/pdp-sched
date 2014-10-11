@@ -1,0 +1,122 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
+class tInfo{
+	float arrivalTime;
+	int id;
+	int timeRemaining;
+	int priority;
+}
+
+public class Scheduler {
+	private final int schedType;
+	private static float globalTime;
+	private static LinkedList<tInfo> FCFS = new LinkedList<tInfo>();
+	private Object mutex0 = new Object();
+	private Object mutex1 = new Object();
+	
+	public synchronized void setGlobalTime(float arrivalTime){
+		globalTime = arrivalTime;
+		
+	}
+	
+	public synchronized float getGlobalTime(){
+		return globalTime;
+	}
+	
+	public Scheduler(int type) {
+		
+		schedType = type;
+	}
+
+	public int findLocation(int id){
+		int location = 0;
+		tInfo temp;
+		synchronized (FCFS){
+		while (location < FCFS.size()){
+			temp = (tInfo) FCFS.get(location);
+			if (temp.id == id){
+				break;
+			}
+			location++;
+		}
+		if (location > FCFS.size()||FCFS.size()==0){
+			return -1;
+		}
+		}
+		return location;
+	}
+	
+	
+	
+	public float FCFSS(float arrivalTime, int id, int timeRemaining){
+			synchronized(mutex0){
+			
+			int location;
+			tInfo info = new tInfo();
+			info.arrivalTime = arrivalTime;
+			info.id = id;
+			info.timeRemaining = timeRemaining;
+			location = findLocation(id);
+			if (arrivalTime > getGlobalTime());
+				setGlobalTime(arrivalTime);
+			
+			if (location < 0){
+				if (FCFS.size() == 0){
+					FCFS.add(info);
+					setGlobalTime((float) Math.ceil(arrivalTime));
+					System.out.println(FCFS.size());
+				}
+				else{
+					try {
+						while (location != 0){
+							System.out.println(id);
+							mutex0.wait();
+							location = findLocation(id);
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			else if (location == 0){
+				if (timeRemaining == 0){
+					FCFS.remove();
+					if (FCFS.size()!=0)
+						mutex0.notifyAll();
+				}
+				else{
+					FCFS.set(0, info);
+				}
+			}
+			if (getGlobalTime()!=Math.ceil(getGlobalTime())){
+				setGlobalTime((float) Math.ceil(arrivalTime));
+			}
+			return getGlobalTime();
+		}
+		
+	}
+	
+	public float scheduleme(float arrivalTime, int id, int timeRemaining,
+			int priority) {
+		// lock the addition of a queue element
+		switch (schedType){
+		case 0:
+			return FCFSS(arrivalTime, id, timeRemaining);
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		default:
+			break;
+		}
+		return priority;
+	}
+
+}
+

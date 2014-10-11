@@ -1,0 +1,47 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
+class tInfo{
+	float arrivalTime;
+	int id;
+	int timeRemaining;
+	int priority;
+}
+
+public class Scheduler {
+	private final int schedType;
+	private static float globalTime;
+	private LinkedList FCFS = new LinkedList();
+	
+	
+	public synchronized void setGlobalTime(float arrivalTime){
+		globalTime = arrivalTime;
+		
+	}
+	
+	public synchronized float getGlobalTime(){
+		return globalTime;
+	}
+	
+	public Scheduler(int type) {
+		
+		schedType = type;
+	}
+
+
+	public float scheduleme(float arrivalTime, int id, int timeRemaining,
+			int priority) {
+		tInfo info = new tInfo();
+		info.arrivalTime = arrivalTime;
+		info.id = id;
+		info.timeRemaining = timeRemaining;
+		FCFS.add(info);
+		System.out.println(FCFS.size());
+		setGlobalTime((float) Math.ceil(arrivalTime));
+		return getGlobalTime();
+	}
+
+}
+

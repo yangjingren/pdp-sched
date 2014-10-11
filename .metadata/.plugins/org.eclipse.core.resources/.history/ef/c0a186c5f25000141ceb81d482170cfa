@@ -1,0 +1,26 @@
+
+public class Scheduler {
+
+	private final int schedType;
+	private static float globalTime;
+	
+	public synchronized void setGlobalTime(float arrivalTime){
+		globalTime = arrivalTime;
+	}
+	
+	public synchronized float getGlobalTime(){
+		return globalTime;
+	}
+	
+	public Scheduler(int type) {
+		schedType = type;
+	}
+
+
+	public float scheduleme(float arrivalTime, int id, int timeRemaining,
+			int priority) {
+		setGlobalTime((float) Math.ceil(arrivalTime));
+		return getGlobalTime();
+	}
+
+}

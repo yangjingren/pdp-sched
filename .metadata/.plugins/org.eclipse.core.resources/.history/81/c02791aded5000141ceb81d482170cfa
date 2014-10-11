@@ -1,0 +1,17 @@
+
+public class Scheduler {
+
+	private final int schedType;
+	
+	public Scheduler(int type) {
+		schedType = type;
+	}
+
+
+	public float scheduleme(float arrivalTime, int id, int timeRemaining,
+			int priority) {
+		System.out.println(arrivalTime + id +timeRemaining +priority);
+		return 0;
+	}
+
+}

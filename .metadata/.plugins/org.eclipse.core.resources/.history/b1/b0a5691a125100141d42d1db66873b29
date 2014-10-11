@@ -1,0 +1,202 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+class tInfo{
+	float arrivalTime;
+	int id;
+	int timeRemaining;
+	int priority;
+}
+
+public class Scheduler {
+	private static BlockingQueue<Integer> queue;
+	private static List<ArrayList<Integer>> myList;
+	private static float globalTime;
+	private Object mutex0 = new Object();
+	private Object mutex1 = new Object();
+	
+	private final int schedType;
+	
+	public synchronized void setGlobalTime(float arrivalTime){
+		globalTime = arrivalTime;
+	}
+	
+	public synchronized float getGlobalTime(){
+		return globalTime;
+	}
+	
+	public Scheduler(int type){
+		switch (type){
+		case 0:
+			queue = new LinkedBlockingQueue<Integer>();
+			break;
+		case 1:
+			break;
+		case 2:
+			myList = new ArrayList<ArrayList<Integer>>();
+			break;
+		}
+		schedType = type;
+	}
+
+	public float FCFS(float arrivalTime, int id, int timeRemaining){
+		if (queue.contains(id)){
+			if (queue.peek()==id){
+				if (timeRemaining == 0){
+					queue.remove();
+					if (queue.size()!=0)
+						mutex0.notifyAll();
+					else
+						;
+				}
+				
+				return getGlobalTime();
+			}
+			else{
+				while (queue.peek()!=id){
+					try {
+						mutex0.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				return getGlobalTime();
+			}
+		} 
+		else{
+			try {
+				queue.put(id);
+				while (queue.peek()!=id){
+					try {
+						mutex0.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}	
+				return getGlobalTime();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return getGlobalTime();
+	}
+	
+	public float PBS(float arrivalTime, int id, int timeRemaining,
+			int priority) {
+		int i = 0;
+		while (i < myList.size()){
+			if(myList.get(i).get(2)==id)
+				break;
+			i++;
+		}
+		//not in queue yet
+		if (i > myList.size()){
+			ArrayList<Integer> appendList = new ArrayList<Integer>();
+			int currentTime = 0;
+			appendList.add(priority);
+			appendList.add(currentTime);
+			appendList.add(id);
+			int insertionPoint = 0;
+			while (insertionPoint < myList.size()){
+				if(priority<=myList.get(insertionPoint).get(0)){
+					if (priority == myList.get(insertionPoint).get(0)){
+						while (priority == myList.get(insertionPoint).get(0)){
+							if (currentTime >= myList.get(insertionPoint).get(1)){
+								insertionPoint++;
+							}
+							else
+								break;
+						}
+					}
+					break;
+				}
+				insertionPoint++;
+			}
+			myList.add(insertionPoint, appendList);
+		}
+		else{
+			if (timeRemaining == 0){
+				myList.remove(i);
+				if (queue.size()!=0)
+					mutex0.notifyAll();
+				else
+					;
+				return getGlobalTime();
+			}
+			else{
+				//Increase current time run
+				ArrayList<Integer> appendList = new ArrayList<Integer>();
+				int currentTime = myList.get(i).get(1) + 1;
+				appendList.add(priority);
+				appendList.add(currentTime);
+				appendList.add(id);
+				myList.remove(i);
+				int insertionPoint = 0;
+				while (insertionPoint < myList.size()){
+					if(priority<=myList.get(insertionPoint).get(0)){
+						if (priority == myList.get(insertionPoint).get(0)){
+							while (priority == myList.get(insertionPoint).get(0)){
+								if (currentTime >= myList.get(insertionPoint).get(1)){
+									insertionPoint++;
+								}
+								else
+									break;
+							}
+						}
+						break;
+					}
+					insertionPoint++;
+				}
+				myList.add(insertionPoint, appendList);
+				while (myList.get(0).get(2)!=id){
+					try {
+						mutex0.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				return getGlobalTime();
+			}
+		}
+		
+		
+		
+		return getGlobalTime();
+	}
+	
+	
+	
+	public float scheduleme(float arrivalTime, int id, int timeRemaining,
+			int priority) {
+		synchronized(mutex0){
+		setGlobalTime((float) Math.ceil(arrivalTime));
+		// lock the addition of a queue element
+		switch (schedType){
+		case 0:
+			//FCFS
+			return FCFS(arrivalTime, id, timeRemaining);
+		case 1:
+			break;
+		case 2:
+			return PBS(arrivalTime, id, timeRemaining, priority);
+		case 3:
+			break;
+		default:
+			return (float) 0.00;
+		}
+		return 0;
+	}
+	}
+
+}
+

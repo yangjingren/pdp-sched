@@ -1,0 +1,89 @@
+/*
+import java.util.LinkedList;
+
+
+public class threadQueue {
+	private static LinkedList<tInfo> FCFS = new LinkedList<tInfo>();
+	
+	public synchronized int findLocation(int id){
+		int location = 0;
+		tInfo temp;
+		synchronized (FCFS){
+			while (location < FCFS.size()){
+				temp = (tInfo) FCFS.get(location);
+				if (temp.id == id){
+					break;
+				}
+				location++;
+			}
+			if (location > FCFS.size()||FCFS.size()==0){
+				return -1;
+			}
+		}
+		return location;
+	}
+	
+	public synchronized int size(){
+		return FCFS.size();
+	}
+	
+	public synchronized void insert(tInfo insertNode){
+		
+	}
+
+	public synchronized void remove() {
+		// TODO Auto-generated method stub
+		FCFS.remove();
+		
+	}
+
+	public synchronized void add(tInfo info) {
+		// TODO Auto-generated method stub
+		FCFS.add(info);
+	}
+
+	public synchronized void set(int i, tInfo info) {
+		// TODO Auto-generated method stub
+		FCFS.set(i, info);
+	}
+	
+}
+*/
+	/*
+	//Implements the synchronized Queue
+	
+	
+	 public synchronized String insert() {
+	        // Wait until message is
+	        // available.
+	        while (empty) {
+	            try {
+	                wait();
+	            } catch (InterruptedException e) {}
+	        }
+	        // Toggle status.
+	        empty = true;
+	        // Notify producer that
+	        // status has changed.
+	        notifyAll();
+	        return message;
+	    }
+
+	    public synchronized void put(String message) {
+	        // Wait until message has
+	        // been retrieved.
+	        while (!empty) {
+	            try { 
+	                wait();
+	            } catch (InterruptedException e) {}
+	        }
+	        // Toggle status.
+	        empty = false;
+	        // Store message.
+	        this.message = message;
+	        // Notify consumer that status
+	        // has changed.
+	        notifyAll();
+	    }
+}
+*/
