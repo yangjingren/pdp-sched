@@ -26,7 +26,22 @@ public class Scheduler {
 	public synchronized float getGlobalTime(){
 		return globalTime;
 	}
+	public int firstLoc(){
+		int count;
+		for (count = 0; count < 5; count ++){
+			if (mQueue.get(count).size()!= 0){
+				return count;
+			}
+		}
+		return 5;
+	}
 	
+	public void wakecaller(){
+		//System.out.println("EnteredWaitCaller");
+		synchronized(mutex0){
+			mutex0.notifyAll();
+		}
+	}
 	public Scheduler(int type){
 		switch (type){
 		case 0:
@@ -193,7 +208,7 @@ public class Scheduler {
 		}
 		
 	}
-	/*
+	
 	private float MLFQ(float arrivalTime, int id, int timeRemaining) {
 		int i = 0;
 		int index = 0;
@@ -204,16 +219,22 @@ public class Scheduler {
 						break;
 				index++;
 			}
-			if (mQueue.get(i).get(index).get(0)==id){
-				break;
+			if (mQueue.get(i).size()!=0){
+				if(index==mQueue.get(i).size())
+					index--;
+				if (mQueue.get(i).get(index).get(0)==id){
+					break;
+				}
+				else{
+					i++;
+				}
 			}
-			else{
+			else
 				i++;
-			}
 		}
 		//not in queues yet
 		if (i == 5){
-			int currentTime = 0;
+			int currentTime = 1;
 			ArrayList<Integer> appendList = new ArrayList<Integer>();
 			appendList.add(id);
 			appendList.add(currentTime);
@@ -241,7 +262,27 @@ public class Scheduler {
 				}
 			}
 			else{
+				while (true){
+					
+					if(firstLoc() == i && mQueue.get(i).get(0).get(0)== id){
+						//System.out.println("true");
+						break;
+					}
+					else{
+						wakecaller();
+						try {
+							mutex0.wait();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				} 
+				if (index == mQueue.get(i).size()){
+					index--;
+				}
 				int currentTime = mQueue.get(i).get(index).get(1) + 1;
+				mQueue.get(i).get(index).set(1, currentTime);
 				if (currentTime == (5*(i+1))){
 					currentTime = 0;
 					ArrayList<Integer> appendList = new ArrayList<Integer>();
@@ -254,32 +295,16 @@ public class Scheduler {
 					else{
 						mQueue.get(i).add(appendList);
 					}
-					while (true){
-						if (i == 0){
-							return getGlobalTime();
-						}
-						else{
-							try {
-								mutex0.wait();
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
+					
 					
 				}
-				
-				
-				
-				
 				
 			}
 			return getGlobalTime();
 		}
 	}
 	
-	*/
+	
 	public float scheduleme(float arrivalTime, int id, int timeRemaining,
 			int priority) {
 		synchronized(mutex0){
